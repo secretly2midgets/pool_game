@@ -14,6 +14,7 @@ New features necessary for pool
 
 Background stuff to make game better
  - Frame time stuff
+ - Real scale vs screen scale
 
 Fun things to add after
  - Different AI opponents with levels of ability to play pool

@@ -56,24 +56,24 @@ void Game::make_balls()
 {
     // set ball colours
     Uint32 ball_colours[16];
-    ball_colours[0]  = SDL_MapSurfaceRGB(writeSurface, 255, 255, 255);     // white
-    ball_colours[0]  = SDL_MapSurfaceRGB(writeSurface, 255, 255, 0);     // yellow
-    ball_colours[1]  = SDL_MapSurfaceRGB(writeSurface, 0,   0,   255);   // blue
-    ball_colours[2]  = SDL_MapSurfaceRGB(writeSurface, 255, 0,   0);     // red
-    ball_colours[3]  = SDL_MapSurfaceRGB(writeSurface, 255, 0,   255);   // purple
-    ball_colours[4]  = SDL_MapSurfaceRGB(writeSurface, 255, 140, 0);     // orange
-    ball_colours[5]  = SDL_MapSurfaceRGB(writeSurface, 0,   80,  0);     // green
-    ball_colours[6]  = SDL_MapSurfaceRGB(writeSurface, 180, 50,  0);     // dark red
-    ball_colours[7]  = SDL_MapSurfaceRGB(writeSurface, 0,   0,   0);     // black
-    ball_colours[8]  = SDL_MapSurfaceRGB(writeSurface, 255, 255, 0);     // yellow
-    ball_colours[9]  = SDL_MapSurfaceRGB(writeSurface, 0,   0,   255);   // blue
-    ball_colours[10] = SDL_MapSurfaceRGB(writeSurface, 255, 0,   0);     // red
-    ball_colours[11] = SDL_MapSurfaceRGB(writeSurface, 255, 0,   255);   // purple
-    ball_colours[12] = SDL_MapSurfaceRGB(writeSurface, 255, 140, 0);     // orange
-    ball_colours[13] = SDL_MapSurfaceRGB(writeSurface, 0,   80,  0);     // green
-    ball_colours[14] = SDL_MapSurfaceRGB(writeSurface, 180, 50,  0);     // dark red
+    ball_colours[0]  = WHITE;
+    ball_colours[0]  = YELLOW;
+    ball_colours[1]  = BLUE;
+    ball_colours[2]  = RED;
+    ball_colours[3]  = PURPLE;
+    ball_colours[4]  = ORANGE;
+    ball_colours[5]  = GREEN;
+    ball_colours[6]  = DARKRED;
+    ball_colours[7]  = BLACK;
+    ball_colours[8]  = YELLOW;
+    ball_colours[9]  = BLUE;
+    ball_colours[10] = RED;
+    ball_colours[11] = PURPLE;
+    ball_colours[12] = ORANGE;
+    ball_colours[13] = GREEN;
+    ball_colours[14] = DARKRED;
 
-    cue_ball.set_colour( SDL_MapSurfaceRGB(writeSurface, 255, 255, 255) );
+    cue_ball.set_colour( WHITE );
     cue_ball.set_rad(10);
     cue_ball.set_pos(SCREEN_WIDTH/3, SCREEN_HEIGHT/2);
 
