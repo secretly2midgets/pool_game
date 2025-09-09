@@ -143,7 +143,7 @@ void Game::run()
             {
                 if (e.key.key == SDLK_SPACE)
                 {
-                    cue_ball.apply_force(100.0, 0.0);
+                    cue_ball.apply_force(1.0, 0.0);
                 }
             }
         }
@@ -175,14 +175,57 @@ void Game::render()
 void Game::process_physics()
 {
     double dt = 1.0;
+    double shoulder_width = 50.0;
+    double e = 1.0;
     // move balls
     cue_ball.move_ball(dt);
+    if (cue_ball.pos[0] - cue_ball.radius <= shoulder_width)
+    {
+        cue_ball.pos[0] = shoulder_width + cue_ball.radius;
+        cue_ball.vel[0] *= -e;
+    }
+    else if (cue_ball.pos[0] + cue_ball.radius >= SCREEN_WIDTH - shoulder_width)
+    {
+        cue_ball.pos[0] = SCREEN_WIDTH - shoulder_width - cue_ball.radius;
+        cue_ball.vel[0] *= -e;
+    }
+    if (cue_ball.pos[1] - cue_ball.radius <= shoulder_width)
+    {
+        cue_ball.pos[1] = shoulder_width + cue_ball.radius;
+        cue_ball.vel[1] *= -e;
+    }
+    else if (cue_ball.pos[1] + cue_ball.radius >= SCREEN_HEIGHT - shoulder_width)
+    {
+        cue_ball.pos[1] = SCREEN_HEIGHT - shoulder_width - cue_ball.radius;
+        cue_ball.vel[1] *= -e;
+    }
     for (unsigned int i = 0; i < 15; ++i)
     {
         balls[i].move_ball(dt);
+        if (balls[i].pos[0] - balls[i].radius <= shoulder_width)
+        {
+            balls[i].pos[0] = shoulder_width + balls[i].radius;
+            balls[i].vel[0] *= -e;
+        }
+        else if (balls[i].pos[0] + balls[i].radius >= SCREEN_WIDTH - shoulder_width)
+        {
+            balls[i].pos[0] = SCREEN_WIDTH - shoulder_width - balls[i].radius;
+            balls[i].vel[0] *= -e;
+        }
+        if (balls[i].pos[1] - balls[i].radius <= shoulder_width)
+        {
+            balls[i].pos[1] = shoulder_width + balls[i].radius;
+            balls[i].vel[1] *= -e;
+        }
+        else if (balls[i].pos[1] + balls[i].radius >= SCREEN_HEIGHT - shoulder_width)
+        {
+            balls[i].pos[1] = SCREEN_HEIGHT - shoulder_width - balls[i].radius;
+            balls[i].vel[1] *= -e;
+        }
     }
 
     // detect collisions
+
     double q_collided = -1.0;
     double q_u[2] = {0.0, 0.0};
     double collided[15] = {-1.0};
@@ -191,36 +234,68 @@ void Game::process_physics()
     {
         double q_pen_dist = balls[i].check_collision(cue_ball, q_u);
         if (q_pen_dist > 0)
+        {
             q_collided = q_pen_dist;
+
+            double v1 = cue_ball.vel[0]*q_u[0] + cue_ball.vel[1]*q_u[1];
+            double v2 = balls[i].vel[0]*q_u[0] + balls[i].vel[1]*q_u[1];
+
+            double total_mass = cue_ball.mass + balls[i].mass;
+
+            double delta_v1 = (balls[i].mass/total_mass)*(v2 - v1)*(1+e);
+            double delta_v2 = (cue_ball.mass/total_mass)*(v1 - v2)*(1+e);
+
+            double F1 = cue_ball.mass*delta_v1/dt;
+            double F2 = balls[i].mass*delta_v2/dt;
+
+            cue_ball.apply_force(F1*q_u[0], F1*q_u[1]);
+            balls[i].apply_force(F2*q_u[0], F2*q_u[1]);
+
+        }
         for (unsigned int j = i+1; j < 15; ++j)
         {
             double pen_dist = balls[i].check_collision(balls[j], unit_vec[i]);
             if (pen_dist > 0)
-                collided[i] = pen_dist;
+            {
+                double v1 = balls[i].vel[0]*unit_vec[i][0] + balls[i].vel[1]*unit_vec[i][1];
+                double v2 = balls[j].vel[0]*unit_vec[i][0] + balls[j].vel[1]*unit_vec[i][1];
+
+                double total_mass = balls[i].mass + balls[j].mass;
+
+                double delta_v1 = (balls[j].mass/total_mass)*(v2 - v1)*(1+e);
+                double delta_v2 = (balls[i].mass/total_mass)*(v1 - v2)*(1+e);
+
+                double F1 = balls[i].mass*delta_v1/dt;
+                double F2 = balls[j].mass*delta_v2/dt;
+
+                balls[i].apply_force(F1*unit_vec[i][0], F1*unit_vec[i][1]);
+                balls[j].apply_force(F2*unit_vec[i][0], F2*unit_vec[i][1]);
+            }
+
         }
     }
 
 
 
     // handle collisions
-    if (q_collided > 0)
-    {
-        double needed_force = q_collided/dt;
-        cue_ball.apply_force(needed_force*q_u[0], needed_force*q_u[1]);
-    }
-    for (unsigned int i = 0; i < 15; ++i)
-    {
-        if (collided[i] > 0)
-        {
-            SDL_Log("HERE");
-            // need to move collided[i] units in the next dt
-            // direction is the vector between the centres of i and j
-            // to move that many units, need to be going at least c[i]/dt velocity next sim step
-            // so need to add velocity in that direction to reach that
-            double needed_force = collided[i]/dt;
-            balls[i].apply_force(needed_force*q_u[0], needed_force*q_u[1]);
-        }
-    }
+//     if (q_collided > 0)
+//     {
+//         double needed_force = q_collided/dt;
+//         cue_ball.apply_force(needed_force*q_u[0], needed_force*q_u[1]);
+//     }
+//     for (unsigned int i = 0; i < 15; ++i)
+//     {
+//         if (collided[i] > 0)
+//         {
+//             SDL_Log("HERE");
+//             // need to move collided[i] units in the next dt
+//             // direction is the vector between the centres of i and j
+//             // to move that many units, need to be going at least c[i]/dt velocity next sim step
+//             // so need to add velocity in that direction to reach that
+//             double needed_force = collided[i]/dt;
+//             balls[i].apply_force(needed_force*q_u[0], needed_force*q_u[1]);
+//         }
+//     }
 }
 
 void Game::close()

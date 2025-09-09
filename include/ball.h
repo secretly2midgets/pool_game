@@ -22,13 +22,15 @@ public:
     ~Ball();
 
     double pos[2];
+    double vel[2];
     int radius;
+    double mass;
+
 private:
     Uint32 colour;
 
-    double vel[2];
     double F_net[2];
-    double mass;
+
 
     bool stripes;
 };

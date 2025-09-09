@@ -8,6 +8,7 @@
 // std stuff
 #include <string>
 #include <iostream>
+#include <cmath>
 
 // game classes
 #include <constants.h>

@@ -15,7 +15,7 @@ stripes(false)
     F_net[0] = 0.0;
     F_net[1] = 0.0;
 
-    mass = 10.0;
+    mass = 1.0;
 }
 
 Ball::~Ball()
@@ -26,7 +26,7 @@ Ball::~Ball()
     F_net[0] = 0.0;
     F_net[1] = 0.0;
 
-    mass = 10.0;
+    mass = 1.0;
 }
 
 void Ball::draw_ball(Uint32 *pixels)
@@ -50,11 +50,20 @@ void Ball::draw_ball(Uint32 *pixels)
 
 void Ball::move_ball(double dt)
 {
+    vel[0] += dt*F_net[0]/mass;
+    vel[1] += dt*F_net[1]/mass;
+
     pos[0] += dt*vel[0];
     pos[1] += dt*vel[1];
 
-    vel[0] += dt*F_net[0]/mass;
-    vel[1] += dt*F_net[1]/mass;
+    // drag
+    vel[0] *= 0.99;
+    vel[1] *= 0.99;
+
+    if (vel[0] < 0.1)
+        vel[0] = 0.0;
+    if (vel[1] < 0.1)
+        vel[1] = 0.0;
 
     F_net[0] = 0.0;
     F_net[1] = 0.0;
@@ -73,7 +82,7 @@ double Ball::check_collision(Ball other_ball, double (&u_vec)[2])
     double dx = other_ball.pos[0] - pos[0];
     double dy = other_ball.pos[1] - pos[1];
     double dist = std::sqrt(dx*dx + dy*dy);
-    double rads = std::sqrt( double( (other_ball.radius + radius)*(other_ball.radius + radius) ) );
+    double rads = double(other_ball.radius + radius);
 
     u_vec[0] = dx/dist;
     u_vec[1] = dy/dist;
