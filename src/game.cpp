@@ -56,7 +56,7 @@ void Game::make_balls()
 {
     // set ball colours
     Uint32 ball_colours[16];
-    ball_colours[0]  = SDL_MapSurfaceRGB(writeSurface, 255, 255, 0);     // yellow
+    ball_colours[0]  = SDL_MapSurfaceRGB(writeSurface, 255, 255, 255);     // white
     ball_colours[0]  = SDL_MapSurfaceRGB(writeSurface, 255, 255, 0);     // yellow
     ball_colours[1]  = SDL_MapSurfaceRGB(writeSurface, 0,   0,   255);   // blue
     ball_colours[2]  = SDL_MapSurfaceRGB(writeSurface, 255, 0,   0);     // red
@@ -141,9 +141,21 @@ void Game::run()
             }
             else if( e.type == SDL_EVENT_KEY_DOWN )
             {
-                if (e.key.key == SDLK_SPACE)
+                if (e.key.key == SDLK_D)
                 {
                     cue_ball.apply_force(1.0, 0.0);
+                }
+                else if (e.key.key == SDLK_A)
+                {
+                    cue_ball.apply_force(-1.0, 0.0);
+                }
+                else if (e.key.key == SDLK_W)
+                {
+                    cue_ball.apply_force(0.0, -1.0);
+                }
+                else if (e.key.key == SDLK_S)
+                {
+                    cue_ball.apply_force(0.0, 1.0);
                 }
             }
         }

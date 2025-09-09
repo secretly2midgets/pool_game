@@ -1,0 +1,21 @@
+Clean up:
+ - Make the collision detection clearer
+ - Make the cue ball just a normal ball at position 0 in the balls list
+ - Declare the colours in the constants file and then use them elsewhere
+ - Add a collision class that handles collisions
+ - Collision matrix of all colliding bodies
+ - Run a recheck every few frames to force collisions to stop
+
+New features necessary for pool
+ - Hit ball with cue
+ - Draw line to show where things are heading
+ - Sink balls
+ - Turns, score
+
+Background stuff to make game better
+ - Frame time stuff
+
+Fun things to add after
+ - Different AI opponents with levels of ability to play pool
+ - Render balls with a super simple blin phong
+ - Handle ball collisions in 3D for rotation
