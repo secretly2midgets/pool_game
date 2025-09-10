@@ -30,8 +30,7 @@ private:
     void process_physics();
 
     // Game objects
-    Ball cue_ball;
-    Ball balls[15];
+    Ball balls[16];
     Board gameBoard;
     Uint32 board_colour;
     Uint32 shoulder_colour;

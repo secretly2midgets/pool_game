@@ -8,8 +8,7 @@ screenSurface(nullptr),
 writeSurface(nullptr),
 gameBoard()
 {
-    cue_ball = Ball(0, 10, 0, 0);
-    for (unsigned int i = 0; i < 15; ++i)
+    for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i] = Ball(0, 10, 0, 0);
     }
@@ -57,33 +56,32 @@ void Game::make_balls()
     // set ball colours
     Uint32 ball_colours[16];
     ball_colours[0]  = WHITE;
-    ball_colours[0]  = YELLOW;
-    ball_colours[1]  = BLUE;
-    ball_colours[2]  = RED;
-    ball_colours[3]  = PURPLE;
-    ball_colours[4]  = ORANGE;
-    ball_colours[5]  = GREEN;
-    ball_colours[6]  = DARKRED;
-    ball_colours[7]  = BLACK;
-    ball_colours[8]  = YELLOW;
-    ball_colours[9]  = BLUE;
-    ball_colours[10] = RED;
-    ball_colours[11] = PURPLE;
-    ball_colours[12] = ORANGE;
-    ball_colours[13] = GREEN;
-    ball_colours[14] = DARKRED;
+    ball_colours[1]  = YELLOW;
+    ball_colours[2]  = BLUE;
+    ball_colours[3]  = RED;
+    ball_colours[4]  = PURPLE;
+    ball_colours[5]  = ORANGE;
+    ball_colours[6]  = GREEN;
+    ball_colours[7]  = DARKRED;
+    ball_colours[8]  = BLACK;
+    ball_colours[9]  = YELLOW;
+    ball_colours[10]  = BLUE;
+    ball_colours[11] = RED;
+    ball_colours[12] = PURPLE;
+    ball_colours[13] = ORANGE;
+    ball_colours[14] = GREEN;
+    ball_colours[15] = DARKRED;
 
-    cue_ball.set_colour( WHITE );
-    cue_ball.set_rad(10);
-    cue_ball.set_pos(SCREEN_WIDTH/3, SCREEN_HEIGHT/2);
 
     int triangle_row = 0;
     int row_count = 0;
-    int ball_pos[15][2];
-    for (unsigned int i = 0; i < 15; ++i)
+    int ball_pos[16][2];
+    ball_pos[0][0] = SCREEN_WIDTH/3.0;
+    ball_pos[0][1] = SCREEN_HEIGHT/2.0;
+    for (unsigned int i = 1; i < 16; ++i)
     {
-        ball_pos[i][0] = 3*SCREEN_WIDTH/5 + 30*triangle_row;
-        ball_pos[i][1] = SCREEN_HEIGHT/2  + row_count*30 - (triangle_row)*15;
+        ball_pos[i][0] = 3.0*SCREEN_WIDTH/5 + 30.0*triangle_row;
+        ball_pos[i][1] = SCREEN_HEIGHT/2  + row_count*30.0 - (triangle_row)*15.0;
 
         row_count = row_count + 1;
         if (row_count > triangle_row)
@@ -93,30 +91,31 @@ void Game::make_balls()
         }
     }
 
-    int pos_arranged[15];
+    int pos_arranged[16];
     pos_arranged[0]  = 0;
-    pos_arranged[1]  = 13;
-    pos_arranged[2]  = 2;
-    pos_arranged[3]  = 11;
-    pos_arranged[4]  = 7;
-    pos_arranged[5]  = 9;
-    pos_arranged[6]  = 6;
-    pos_arranged[7]  = 4;
-    pos_arranged[8]  = 8;
-    pos_arranged[9]  = 5;
-    pos_arranged[10] = 10;
-    pos_arranged[11] = 3;
-    pos_arranged[12] = 12;
-    pos_arranged[13] = 1;
-    pos_arranged[14] = 14;
+    pos_arranged[1]  = 1;
+    pos_arranged[2]  = 14;
+    pos_arranged[3]  = 3;
+    pos_arranged[4]  = 12;
+    pos_arranged[5]  = 8;
+    pos_arranged[6]  = 10;
+    pos_arranged[7]  = 7;
+    pos_arranged[8]  = 5;
+    pos_arranged[9]  = 9;
+    pos_arranged[10] = 6;
+    pos_arranged[11] = 11;
+    pos_arranged[12] = 4;
+    pos_arranged[13] = 13;
+    pos_arranged[14] = 2;
+    pos_arranged[15] = 15;
 
-    for (unsigned int i = 0; i < 15; ++i)
+    for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i].set_colour( ball_colours[i] );
         balls[i].set_rad(10);
         balls[i].set_pos(ball_pos[pos_arranged[i]][0], ball_pos[pos_arranged[i]][1]);
 
-        if (i > 7)
+        if (i > 8)
             balls[i].set_stripe();
     }
 }
@@ -143,19 +142,19 @@ void Game::run()
             {
                 if (e.key.key == SDLK_D)
                 {
-                    cue_ball.apply_force(1.0, 0.0);
+                    balls[0].apply_force(1.0, 0.0);
                 }
                 else if (e.key.key == SDLK_A)
                 {
-                    cue_ball.apply_force(-1.0, 0.0);
+                    balls[0].apply_force(-1.0, 0.0);
                 }
                 else if (e.key.key == SDLK_W)
                 {
-                    cue_ball.apply_force(0.0, -1.0);
+                    balls[0].apply_force(0.0, -1.0);
                 }
                 else if (e.key.key == SDLK_S)
                 {
-                    cue_ball.apply_force(0.0, 1.0);
+                    balls[0].apply_force(0.0, 1.0);
                 }
             }
         }
@@ -173,8 +172,7 @@ void Game::render()
     // do the CPU per pixel rendering
     Uint32 *pixels = (Uint32 *) writeSurface->pixels;
     gameBoard.draw_board(pixels, board_colour, shoulder_colour);
-    cue_ball.draw_ball(pixels);
-    for (unsigned int i = 0; i < 15; ++i)
+    for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i].draw_ball(pixels);
     }
@@ -190,28 +188,7 @@ void Game::process_physics()
     double shoulder_width = 50.0;
     double e = 1.0;
     // move balls
-    cue_ball.move_ball(dt);
-    if (cue_ball.pos[0] - cue_ball.radius <= shoulder_width)
-    {
-        cue_ball.pos[0] = shoulder_width + cue_ball.radius;
-        cue_ball.vel[0] *= -e;
-    }
-    else if (cue_ball.pos[0] + cue_ball.radius >= SCREEN_WIDTH - shoulder_width)
-    {
-        cue_ball.pos[0] = SCREEN_WIDTH - shoulder_width - cue_ball.radius;
-        cue_ball.vel[0] *= -e;
-    }
-    if (cue_ball.pos[1] - cue_ball.radius <= shoulder_width)
-    {
-        cue_ball.pos[1] = shoulder_width + cue_ball.radius;
-        cue_ball.vel[1] *= -e;
-    }
-    else if (cue_ball.pos[1] + cue_ball.radius >= SCREEN_HEIGHT - shoulder_width)
-    {
-        cue_ball.pos[1] = SCREEN_HEIGHT - shoulder_width - cue_ball.radius;
-        cue_ball.vel[1] *= -e;
-    }
-    for (unsigned int i = 0; i < 15; ++i)
+    for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i].move_ball(dt);
         if (balls[i].pos[0] - balls[i].radius <= shoulder_width)
@@ -237,34 +214,11 @@ void Game::process_physics()
     }
 
     // detect collisions
-
-    double q_collided = -1.0;
-    double q_u[2] = {0.0, 0.0};
-    double collided[15] = {-1.0};
-    double unit_vec[15][2];
-    for (unsigned int i = 0; i < 15; ++i)
+    double collided[16] = {-1.0};
+    double unit_vec[16][2];
+    for (unsigned int i = 0; i < 16; ++i)
     {
-        double q_pen_dist = balls[i].check_collision(cue_ball, q_u);
-        if (q_pen_dist > 0)
-        {
-            q_collided = q_pen_dist;
-
-            double v1 = cue_ball.vel[0]*q_u[0] + cue_ball.vel[1]*q_u[1];
-            double v2 = balls[i].vel[0]*q_u[0] + balls[i].vel[1]*q_u[1];
-
-            double total_mass = cue_ball.mass + balls[i].mass;
-
-            double delta_v1 = (balls[i].mass/total_mass)*(v2 - v1)*(1+e);
-            double delta_v2 = (cue_ball.mass/total_mass)*(v1 - v2)*(1+e);
-
-            double F1 = cue_ball.mass*delta_v1/dt;
-            double F2 = balls[i].mass*delta_v2/dt;
-
-            cue_ball.apply_force(F1*q_u[0], F1*q_u[1]);
-            balls[i].apply_force(F2*q_u[0], F2*q_u[1]);
-
-        }
-        for (unsigned int j = i+1; j < 15; ++j)
+        for (unsigned int j = i+1; j < 16; ++j)
         {
             double pen_dist = balls[i].check_collision(balls[j], unit_vec[i]);
             if (pen_dist > 0)
