@@ -39,7 +39,7 @@ void Ball::draw_ball(Uint32 *pixels)
             if (r_2 < radius*radius)
             {
                 if ( !stripes || ( abs(y-pos[1]) < radius/2 ) )
-                    pixels[x + y*SCREEN_WIDTH] = GREEN;
+                    pixels[x + y*SCREEN_WIDTH] = colour;
                 else
                     pixels[x + y*SCREEN_WIDTH] = WHITE;
             }
