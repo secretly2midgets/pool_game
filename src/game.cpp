@@ -8,6 +8,7 @@ screenSurface(nullptr),
 writeSurface(nullptr),
 gameBoard()
 {
+    angle = 0.0;
     for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i] = Ball(0, 10, 0, 0);
@@ -142,19 +143,31 @@ void Game::run()
             {
                 if (e.key.key == SDLK_D)
                 {
-                    balls[0].apply_force(1.0, 0.0);
+                    angle = 0.0;
                 }
                 else if (e.key.key == SDLK_A)
                 {
-                    balls[0].apply_force(-1.0, 0.0);
+                    angle = M_PI; //180.0;
                 }
                 else if (e.key.key == SDLK_W)
                 {
-                    balls[0].apply_force(0.0, -1.0);
+                    angle = 3.0*M_PI/2.0; //90.0;
                 }
                 else if (e.key.key == SDLK_S)
                 {
-                    balls[0].apply_force(0.0, 1.0);
+                    angle = M_PI/2.0;  //270.0;
+                }
+                else if (e.key.key == SDLK_Q)
+                {
+                    angle -= 0.1*M_PI; //10.0;
+                }
+                else if (e.key.key == SDLK_E)
+                {
+                    angle += 0.1*M_PI; //10.0;
+                }
+                else if (e.key.key == SDLK_SPACE)
+                {
+                    balls[0].apply_force(std::cos(angle), std::sin(angle));
                 }
             }
         }
@@ -172,6 +185,7 @@ void Game::render()
     // do the CPU per pixel rendering
     Uint32 *pixels = (Uint32 *) writeSurface->pixels;
     gameBoard.draw_board(pixels, board_colour, shoulder_colour);
+    gameBoard.draw_line(pixels, GREY, 3.0, balls[0].pos[0], balls[0].pos[1], angle);
     for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i].draw_ball(pixels);
@@ -240,28 +254,6 @@ void Game::process_physics()
 
         }
     }
-
-
-
-    // handle collisions
-//     if (q_collided > 0)
-//     {
-//         double needed_force = q_collided/dt;
-//         cue_ball.apply_force(needed_force*q_u[0], needed_force*q_u[1]);
-//     }
-//     for (unsigned int i = 0; i < 15; ++i)
-//     {
-//         if (collided[i] > 0)
-//         {
-//             SDL_Log("HERE");
-//             // need to move collided[i] units in the next dt
-//             // direction is the vector between the centres of i and j
-//             // to move that many units, need to be going at least c[i]/dt velocity next sim step
-//             // so need to add velocity in that direction to reach that
-//             double needed_force = collided[i]/dt;
-//             balls[i].apply_force(needed_force*q_u[0], needed_force*q_u[1]);
-//         }
-//     }
 }
 
 void Game::close()

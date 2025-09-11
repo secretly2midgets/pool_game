@@ -68,3 +68,29 @@ void Board::draw_board(Uint32 *pixels, Uint32 board_colour, Uint32 shoulder_colo
         }
     }
 }
+
+void Board::draw_line(Uint32 *pixels, Uint32 line_colour, double line_width, double px, double py, double theta)
+{
+    bool on_board = true;
+    double current_point[2] = {px, py};
+    while (on_board)
+    {
+        if (((current_point[0] < shoulder_width) || (current_point[0] > (SCREEN_WIDTH  - shoulder_width))) ||
+            ((current_point[1] < shoulder_width) || (current_point[1] > (SCREEN_HEIGHT - shoulder_width))))
+        {
+            on_board = false;
+        }
+        pixels[int(current_point[0]) + int(current_point[1])*SCREEN_WIDTH] = line_colour;
+        for (unsigned int i=0; i<line_width; ++i)
+        {
+            pixels[int(current_point[0])+i + int(current_point[1])*SCREEN_WIDTH ] = line_colour;
+            pixels[int(current_point[0])-i + int(current_point[1])*SCREEN_WIDTH ] = line_colour;
+            pixels[int(current_point[0]) + (int(current_point[1])+i)*SCREEN_WIDTH ] = line_colour;
+            pixels[int(current_point[0]) + (int(current_point[1])-i)*SCREEN_WIDTH ] = line_colour;
+//             pixels[int(current_point[0]+double(i)*std::sin(theta)) + int(current_point[1]+double(i)*std::cos(theta))*SCREEN_WIDTH ] = line_colour;
+//             pixels[int(current_point[0]-double(i)*std::sin(theta)) + int(current_point[1]-double(i)*std::cos(theta))*SCREEN_WIDTH ] = line_colour;
+        }
+        current_point[0] += 0.1*std::cos(theta);
+        current_point[1] += 0.1*std::sin(theta);
+    }
+}

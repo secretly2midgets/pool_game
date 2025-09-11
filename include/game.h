@@ -34,6 +34,7 @@ private:
     Board gameBoard;
     Uint32 board_colour;
     Uint32 shoulder_colour;
+    double angle;
 
     // SDL objects
 

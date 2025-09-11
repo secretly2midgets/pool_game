@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <SDL3/SDL.h>
+#include <cmath>
 
 class Board
 {
@@ -9,6 +10,7 @@ public:
     Board();
     ~Board();
     void draw_board(Uint32 *pixels, Uint32 board_colour, Uint32 shoulder_colour);
+    void draw_line(Uint32 *pixels, Uint32 line_colour, double line_width, double px, double py, double theta);
 private:
     Uint32 board_colour;
     Uint32 shoulder_colour;

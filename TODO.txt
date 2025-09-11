@@ -1,7 +1,7 @@
 Clean up:
  - Make the collision detection clearer
- - Make the cue ball just a normal ball at position 0 in the balls list
- - Declare the colours in the constants file and then use them elsewhere
+ - [DONE] Make the cue ball just a normal ball at position 0 in the balls list
+ - [DONE] Declare the colours in the constants file and then use them elsewhere
  - Add a collision class that handles collisions
  - Collision matrix of all colliding bodies
  - Run a recheck every few frames to force collisions to stop

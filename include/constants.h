@@ -17,5 +17,6 @@ constexpr Uint32 ORANGE  = 0xFF008CFFu; // {255, 140, 0,   255};
 constexpr Uint32 GREEN   = 0xFF008C00u; // {0,   60,  0,   255};
 constexpr Uint32 DARKRED = 0xFF00B432u; // {180, 50,  0,   255};
 constexpr Uint32 BLACK   = 0xFF000000u; // {0,   0,   0,   255};
+constexpr Uint32 GREY    = 0xFF888888u;
 
 #endif
