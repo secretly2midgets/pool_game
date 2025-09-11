@@ -5,15 +5,16 @@ Clean up:
  - Add a collision class that handles collisions
  - Collision matrix of all colliding bodies
  - Run a recheck every few frames to force collisions to stop
+ - Use a leapfrog integration scheme
 
 New features necessary for pool
  - Hit ball with cue
- - Draw line to show where things are heading
+ - [DONE] Draw line to show where things are heading
  - Sink balls
  - Turns, score
 
 Background stuff to make game better
- - Frame time stuff
+ - [DONE] Frame time stuff
  - Real scale vs screen scale
 
 Fun things to add after

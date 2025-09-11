@@ -27,7 +27,7 @@ private:
     // member functions
     void render();
     void make_balls();
-    void process_physics();
+    void process_physics(double dt);
 
     // Game objects
     Ball balls[16];

@@ -128,10 +128,16 @@ void Game::run()
     bool quit(false);
     SDL_Event e;
     SDL_zero(e);
+    double elapsed_time = 0.0;
+    double last_time = SDL_GetTicksNS();
 
     // main game loop
     while (!quit)
     {
+        // check how long frame took
+        elapsed_time =  SDL_GetTicksNS() - last_time;
+        last_time = SDL_GetTicksNS();
+
         // events
         while (SDL_PollEvent( &e ) == true)
         {
@@ -167,16 +173,19 @@ void Game::run()
                 }
                 else if (e.key.key == SDLK_SPACE)
                 {
-                    balls[0].apply_force(std::cos(angle), std::sin(angle));
+                    balls[0].apply_force(1000.0*std::cos(angle), 1000.0*std::sin(angle));
                 }
             }
         }
 
         // physics
-        process_physics();
+        process_physics(frametime);
 
         // render
         render();
+
+        if (1000.0*frametime > (1e-6)*elapsed_time)
+            SDL_Delay(1000.0*frametime - (1e-6)*elapsed_time);
     }
 }
 
@@ -196,9 +205,8 @@ void Game::render()
     SDL_UpdateWindowSurface( window );
 }
 
-void Game::process_physics()
+void Game::process_physics(double dt)
 {
-    double dt = 1.0;
     double shoulder_width = 50.0;
     double e = 1.0;
     // move balls

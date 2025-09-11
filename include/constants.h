@@ -5,7 +5,7 @@
 //Screen dimension constants
 constexpr int SCREEN_WIDTH{  640 };
 constexpr int SCREEN_HEIGHT{ 480 };
-
+constexpr double frametime(0.04);
 
 /* Colours */
 constexpr Uint32 WHITE   = 0xFFFFFFFFu; // {255, 255, 255, 255};
