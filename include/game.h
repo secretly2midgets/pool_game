@@ -18,9 +18,15 @@
 
 enum GameState
 {
+    PLAYER_TURN,
+    PHYSICS_PROCESS,
+    HITTING_BALL
+};
+
+enum Player
+{
     PLAYER_ONE,
-    PLAYER_TWO,
-    PHYSICS_PROCESS
+    PLAYER_TWO
 };
 
 class Game
@@ -36,6 +42,7 @@ private:
     void render();
     void make_balls();
     void process_physics(double dt);
+    void handle_events(SDL_Event e, bool& quit);
 
     // Game objects
     Ball balls[16];
@@ -44,6 +51,7 @@ private:
     Uint32 shoulder_colour;
     double angle;
     GameState currentState;
+    Player whoseTurn;
 
     // SDL objects
 

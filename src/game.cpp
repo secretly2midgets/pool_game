@@ -13,7 +13,8 @@ gameBoard()
     {
         balls[i] = Ball(0, 10, 0, 0);
     }
-    currentState = PLAYER_ONE;
+    currentState = PLAYER_TURN;
+    whoseTurn = PLAYER_ONE;
     timeText.str("");
 }
 
@@ -148,44 +149,7 @@ void Game::run()
         last_time = SDL_GetTicksNS();
 
         // events
-        while (SDL_PollEvent( &e ) == true)
-        {
-            if (e.type == SDL_EVENT_QUIT)
-            {
-                quit = true;
-            }
-            else if( e.type == SDL_EVENT_KEY_DOWN )
-            {
-                if (e.key.key == SDLK_D)
-                {
-                    angle = 0.0;
-                }
-                else if (e.key.key == SDLK_A)
-                {
-                    angle = M_PI; //180.0;
-                }
-                else if (e.key.key == SDLK_W)
-                {
-                    angle = 3.0*M_PI/2.0; //90.0;
-                }
-                else if (e.key.key == SDLK_S)
-                {
-                    angle = M_PI/2.0;  //270.0;
-                }
-                else if (e.key.key == SDLK_Q)
-                {
-                    angle -= 0.1*M_PI; //10.0;
-                }
-                else if (e.key.key == SDLK_E)
-                {
-                    angle += 0.1*M_PI; //10.0;
-                }
-                else if (e.key.key == SDLK_SPACE)
-                {
-                    balls[0].apply_force(1000.0*std::cos(angle), 1000.0*std::sin(angle));
-                }
-            }
-        }
+        handle_events(e, quit);
         eventTime = SDL_GetTicksNS() - last_time;
 
         // physics
@@ -211,32 +175,76 @@ void Game::run()
     }
 }
 
+void Game::handle_events(SDL_Event e, bool& quit)
+{
+    while (SDL_PollEvent( &e ) == true)
+    {
+        if (e.type == SDL_EVENT_QUIT)
+        {
+            quit = true;
+        }
+        else if( e.type == SDL_EVENT_KEY_DOWN )
+        {
+            if (e.key.key == SDLK_D)
+            {
+                angle = 0.0;
+            }
+            else if (e.key.key == SDLK_A)
+            {
+                angle = M_PI; //180.0;
+            }
+            else if (e.key.key == SDLK_W)
+            {
+                angle = 3.0*M_PI/2.0; //90.0;
+            }
+            else if (e.key.key == SDLK_S)
+            {
+                angle = M_PI/2.0;  //270.0;
+            }
+            else if (e.key.key == SDLK_Q)
+            {
+                angle -= 0.1*M_PI; //10.0;
+            }
+            else if (e.key.key == SDLK_E)
+            {
+                angle += 0.1*M_PI; //10.0;
+            }
+            else if (e.key.key == SDLK_SPACE)
+            {
+                currentState = HITTING_BALL;
+                //balls[0].apply_force(1000.0*std::cos(angle), 1000.0*std::sin(angle));
+            }
+        }
+    }
+}
+
 void Game::render()
 {
     // do the CPU per pixel rendering
     Uint32 *pixels = (Uint32 *) writeSurface->pixels;
     gameBoard.draw_board(pixels, board_colour, shoulder_colour);
 
-    switch (currentState)
+    if (currentState == PLAYER_TURN)
     {
-        case PLAYER_ONE:
-            // draw line showing where the shot will go
-            gameBoard.draw_line(pixels, GREY, 1.0, balls[0].pos[0], balls[0].pos[1], angle);
-            // draw pool cue
-            gameBoard.draw_line_segment(pixels, BROWN,      3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
-            gameBoard.draw_line_segment(pixels, RED,        3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 10.0,  100.0);
-            gameBoard.draw_line_segment(pixels, LIGHTGREY,  3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 3.0,   50.0);
-            break;
-        case PLAYER_TWO:
-            // draw line showing where the shot will go
-            gameBoard.draw_line(pixels, GREY, 1.0, balls[0].pos[0], balls[0].pos[1], angle);
-            // draw pool cue
-            gameBoard.draw_line_segment(pixels, BROWN,      3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
-            gameBoard.draw_line_segment(pixels, BLUE,       3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 10.0,  100.0);
-            gameBoard.draw_line_segment(pixels, LIGHTGREY,  3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 3.0,   50.0);
-            break;
-        default:
-            break;
+        switch (whoseTurn)
+        {
+            case PLAYER_ONE:
+                // draw line showing where the shot will go
+                gameBoard.draw_line(pixels, GREY, 1.0, balls[0].pos[0], balls[0].pos[1], angle);
+                // draw pool cue
+                gameBoard.draw_line_segment(pixels, BROWN,      3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
+                gameBoard.draw_line_segment(pixels, RED,        3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 10.0,  100.0);
+                gameBoard.draw_line_segment(pixels, LIGHTGREY,  3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 3.0,   50.0);
+                break;
+            case PLAYER_TWO:
+                // draw line showing where the shot will go
+                gameBoard.draw_line(pixels, GREY, 1.0, balls[0].pos[0], balls[0].pos[1], angle);
+                // draw pool cue
+                gameBoard.draw_line_segment(pixels, BROWN,      3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
+                gameBoard.draw_line_segment(pixels, BLUE,       3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 10.0,  100.0);
+                gameBoard.draw_line_segment(pixels, LIGHTGREY,  3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 3.0,   50.0);
+                break;
+        }
     }
 
 
