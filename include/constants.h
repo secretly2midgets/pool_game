@@ -5,7 +5,7 @@
 //Screen dimension constants
 constexpr int SCREEN_WIDTH{  640 };
 constexpr int SCREEN_HEIGHT{ 480 };
-constexpr double frametime(0.04);
+constexpr double frametime(0.02);
 
 /* Colours */
 constexpr Uint32 WHITE   = 0xFFFFFFFFu; // {255, 255, 255, 255};
@@ -18,5 +18,6 @@ constexpr Uint32 GREEN   = 0xFF008C00u; // {0,   60,  0,   255};
 constexpr Uint32 DARKRED = 0xFF00B432u; // {180, 50,  0,   255};
 constexpr Uint32 BLACK   = 0xFF000000u; // {0,   0,   0,   255};
 constexpr Uint32 GREY    = 0xFF888888u;
+constexpr Uint32 BROWN   = 0xFF229999u;
 
 #endif

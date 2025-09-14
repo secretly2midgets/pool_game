@@ -13,6 +13,7 @@ gameBoard()
     {
         balls[i] = Ball(0, 10, 0, 0);
     }
+    currentState = PLAYER_ONE;
 }
 
 // Destructor
@@ -194,7 +195,26 @@ void Game::render()
     // do the CPU per pixel rendering
     Uint32 *pixels = (Uint32 *) writeSurface->pixels;
     gameBoard.draw_board(pixels, board_colour, shoulder_colour);
-    gameBoard.draw_line(pixels, GREY, 3.0, balls[0].pos[0], balls[0].pos[1], angle);
+
+    switch (currentState)
+    {
+        case PLAYER_ONE:
+            // draw line showing where the shot will go
+            gameBoard.draw_line(pixels, GREY, 1.0, balls[0].pos[0], balls[0].pos[1], angle);
+            // draw pool cue
+            gameBoard.draw_line_segment(pixels, BROWN, 3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
+            break;
+        case PLAYER_TWO:
+            // draw line showing where the shot will go
+            gameBoard.draw_line(pixels, GREY, 1.0, balls[0].pos[0], balls[0].pos[1], angle);
+            // draw pool cue
+            gameBoard.draw_line_segment(pixels, GREY, 3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
+            break;
+        default:
+            break;
+    }
+
+
     for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i].draw_ball(pixels);

@@ -15,6 +15,13 @@
 #include <ball.h>
 #include <board.h>
 
+enum GameState
+{
+    PLAYER_ONE,
+    PLAYER_TWO,
+    PHYSICS_PROCESS
+};
+
 class Game
 {
 public:
@@ -35,6 +42,7 @@ private:
     Uint32 board_colour;
     Uint32 shoulder_colour;
     double angle;
+    GameState currentState;
 
     // SDL objects
 

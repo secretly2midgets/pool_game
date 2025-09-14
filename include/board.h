@@ -11,6 +11,7 @@ public:
     ~Board();
     void draw_board(Uint32 *pixels, Uint32 board_colour, Uint32 shoulder_colour);
     void draw_line(Uint32 *pixels, Uint32 line_colour, double line_width, double px, double py, double theta);
+    void draw_line_segment(Uint32 *pixels, Uint32 line_colour, double line_width, double px, double py, double theta, double length, double start_offset);
 private:
     Uint32 board_colour;
     Uint32 shoulder_colour;

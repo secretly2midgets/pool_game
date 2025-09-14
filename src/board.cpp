@@ -60,10 +60,9 @@ void Board::draw_board(Uint32 *pixels, Uint32 board_colour, Uint32 shoulder_colo
         {
             for (unsigned int y = holes[h][1] - radius; y < holes[h][1] + radius; ++y)
             {
-                Uint32 new_colour(0);
                 double r_2 = (x-holes[h][0])*(x-holes[h][0]) + (y-holes[h][1])*(y-holes[h][1]);
                 if (r_2 <= radius*radius)
-                    pixels[x + y*width] = new_colour;
+                    pixels[x + y*width] = BLACK;
             }
         }
     }
@@ -92,5 +91,33 @@ void Board::draw_line(Uint32 *pixels, Uint32 line_colour, double line_width, dou
         }
         current_point[0] += 0.1*std::cos(theta);
         current_point[1] += 0.1*std::sin(theta);
+    }
+}
+
+void Board::draw_line_segment(Uint32 *pixels, Uint32 line_colour, double line_width, double px, double py, double theta, double length, double start_offset)
+{
+    bool on_board = true;
+    double current_point[2] = {px + start_offset*std::cos(theta), py + start_offset*std::sin(theta)};
+    double current_length = 0.0;
+    while (on_board)
+    {
+        pixels[int(current_point[0]) + int(current_point[1])*SCREEN_WIDTH] = line_colour;
+        for (unsigned int i=0; i<line_width; ++i)
+        {
+            pixels[int(current_point[0])+i + int(current_point[1])*SCREEN_WIDTH ] = line_colour;
+            pixels[int(current_point[0])-i + int(current_point[1])*SCREEN_WIDTH ] = line_colour;
+            pixels[int(current_point[0]) + (int(current_point[1])+i)*SCREEN_WIDTH ] = line_colour;
+            pixels[int(current_point[0]) + (int(current_point[1])-i)*SCREEN_WIDTH ] = line_colour;
+        }
+        current_point[0] += 0.1*std::cos(theta);
+        current_point[1] += 0.1*std::sin(theta);
+        current_length += 0.1;
+
+        if (((current_point[0] < line_width) || (current_point[0] > SCREEN_WIDTH -  line_width)) ||
+            ((current_point[1] < line_width) || (current_point[1] > SCREEN_HEIGHT - line_width)) ||
+            (current_length > length))
+        {
+            on_board = false;
+        }
     }
 }
