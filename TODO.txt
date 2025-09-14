@@ -10,9 +10,10 @@ Clean up:
 New features necessary for pool
  - [DONE] Hit ball with cue
  - [DONE] Draw line to show where things are heading
- - Sink balls
+ - [DONE] Sink balls
  - Turns, score
  - Hardness of hitting ball
+ - [SIMPLE VERSION DONE] Recover sunk cue ball
 
 Background stuff to make game better
  - [DONE] Frame time stuff
@@ -22,3 +23,4 @@ Fun things to add after
  - Different AI opponents with levels of ability to play pool
  - Render balls with a super simple blin phong
  - Handle ball collisions in 3D for rotation
+ - Little animation with the pool cue

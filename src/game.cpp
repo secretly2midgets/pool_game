@@ -274,6 +274,9 @@ void Game::render()
 
 void Game::process_physics(double dt)
 {
+    if (balls[0].sunk == SUNK)
+        currentState = PLACING_CUE_BALL;
+
     if (currentState == PHYSICS_PROCESS)
     {
         double shoulder_width = 50.0;
@@ -351,12 +354,11 @@ void Game::process_physics(double dt)
             }
         }
 
-
         // check if all the balls are stopped (if so then the physics is done)
         bool all_stopped = true;
         for (unsigned int i = 0; i < 16; ++i)
         {
-            if ((std::abs(balls[i].vel[0]) > vel_tol) || (std::abs(balls[i].vel[1]) > vel_tol))
+            if ((balls[i].sunk != SUNK) && ((std::abs(balls[i].vel[0]) > vel_tol) || (std::abs(balls[i].vel[1]) > vel_tol)))
                 all_stopped = false;
         }
         if (all_stopped)
@@ -370,6 +372,16 @@ void Game::process_physics(double dt)
     else if (currentState == PLAYER_TURN)
     {
         angle += shiftToSlow * dt * turning * M_PI;
+    }
+    else if (currentState == PLACING_CUE_BALL)
+    {
+        // make more elaborate later
+        balls[0].set_rad(10);
+        balls[0].set_pos(SCREEN_WIDTH/3.0, SCREEN_HEIGHT/2.0);
+        balls[0].sunk = NOT_SUNK;
+        balls[0].vel[0] = 0.0;
+        balls[0].vel[1] = 0.0;
+        currentState = PHYSICS_PROCESS;
     }
 }
 
