@@ -202,13 +202,17 @@ void Game::render()
             // draw line showing where the shot will go
             gameBoard.draw_line(pixels, GREY, 1.0, balls[0].pos[0], balls[0].pos[1], angle);
             // draw pool cue
-            gameBoard.draw_line_segment(pixels, BROWN, 3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
+            gameBoard.draw_line_segment(pixels, BROWN,      3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
+            gameBoard.draw_line_segment(pixels, RED,        3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 10.0,  100.0);
+            gameBoard.draw_line_segment(pixels, LIGHTGREY,  3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 3.0,   50.0);
             break;
         case PLAYER_TWO:
             // draw line showing where the shot will go
             gameBoard.draw_line(pixels, GREY, 1.0, balls[0].pos[0], balls[0].pos[1], angle);
             // draw pool cue
-            gameBoard.draw_line_segment(pixels, GREY, 3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
+            gameBoard.draw_line_segment(pixels, BROWN,      3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 250.0, 50.0);
+            gameBoard.draw_line_segment(pixels, BLUE,       3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 10.0,  100.0);
+            gameBoard.draw_line_segment(pixels, LIGHTGREY,  3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 3.0,   50.0);
             break;
         default:
             break;
