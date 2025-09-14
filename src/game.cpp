@@ -9,6 +9,8 @@ writeSurface(nullptr),
 gameBoard()
 {
     angle = 0.0;
+    turning = 0.0;
+    shiftToSlow = 1.0;
     for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i] = Ball(0, 10, 0, 0);
@@ -201,16 +203,30 @@ void Game::handle_events(SDL_Event e, bool& quit)
             }
             else if (e.key.key == SDLK_Q)
             {
-                angle -= 0.1*M_PI; //10.0;
+                turning = -1.0;
             }
             else if (e.key.key == SDLK_E)
             {
-                angle += 0.1*M_PI; //10.0;
+                turning = 1.0;
             }
             else if (e.key.key == SDLK_SPACE)
             {
                 currentState = HITTING_BALL;
-                //balls[0].apply_force(1000.0*std::cos(angle), 1000.0*std::sin(angle));
+            }
+            else if (e.key.key == SDLK_LSHIFT)
+            {
+                shiftToSlow = 0.1;
+            }
+        }
+        else if( e.type == SDL_EVENT_KEY_UP )
+        {
+            if ((e.key.key == SDLK_Q) || (e.key.key == SDLK_E))
+            {
+                turning = 0.0;
+            }
+            else if (e.key.key == SDLK_LSHIFT)
+            {
+                shiftToSlow = 1.0;
             }
         }
     }
@@ -350,6 +366,10 @@ void Game::process_physics(double dt)
     {
         balls[0].apply_force(10000.0*std::cos(angle), 10000.0*std::sin(angle));
         currentState = PHYSICS_PROCESS;
+    }
+    else if (currentState == PLAYER_TURN)
+    {
+        angle += shiftToSlow * dt * turning * M_PI;
     }
 }
 

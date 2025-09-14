@@ -50,6 +50,11 @@ private:
     Board gameBoard;
     Uint32 board_colour;
     Uint32 shoulder_colour;
+
+    // 1 if turning right, -1 if left, 0 if not at all
+    double turning;
+    // if shift is held this is 0.1 if not it is 1.0
+    double shiftToSlow;
     double angle;
     GameState currentState;
     Player whoseTurn;
