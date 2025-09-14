@@ -60,9 +60,9 @@ void Ball::move_ball(double dt)
     vel[0] *= 0.99;
     vel[1] *= 0.99;
 
-    if (std::abs(vel[0]) < 0.1)
+    if (std::abs(vel[0]) < vel_tol)
         vel[0] = 0.0;
-    if (std::abs(vel[1]) < 0.1)
+    if (std::abs(vel[1]) < vel_tol)
         vel[1] = 0.0;
 
     F_net[0] = 0.0;

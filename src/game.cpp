@@ -154,12 +154,10 @@ void Game::run()
 
         // physics
         process_physics(frametime);
-
         physicsTime = SDL_GetTicksNS() - last_time - eventTime;
 
         // render
         render();
-
         renderTime = SDL_GetTicksNS() - last_time - eventTime - physicsTime;
 
         waitTime = 0.0;
@@ -260,60 +258,75 @@ void Game::render()
 
 void Game::process_physics(double dt)
 {
-    double shoulder_width = 50.0;
-    double e = 1.0;
-    // move balls
-    for (unsigned int i = 0; i < 16; ++i)
+    if (currentState == PHYSICS_PROCESS)
     {
-        balls[i].move_ball(dt);
-        if (balls[i].pos[0] - balls[i].radius <= shoulder_width)
+        double shoulder_width = 50.0;
+        double e = 1.0;
+        // move balls
+        for (unsigned int i = 0; i < 16; ++i)
         {
-            balls[i].pos[0] = shoulder_width + balls[i].radius;
-            balls[i].vel[0] *= -e;
-        }
-        else if (balls[i].pos[0] + balls[i].radius >= SCREEN_WIDTH - shoulder_width)
-        {
-            balls[i].pos[0] = SCREEN_WIDTH - shoulder_width - balls[i].radius;
-            balls[i].vel[0] *= -e;
-        }
-        if (balls[i].pos[1] - balls[i].radius <= shoulder_width)
-        {
-            balls[i].pos[1] = shoulder_width + balls[i].radius;
-            balls[i].vel[1] *= -e;
-        }
-        else if (balls[i].pos[1] + balls[i].radius >= SCREEN_HEIGHT - shoulder_width)
-        {
-            balls[i].pos[1] = SCREEN_HEIGHT - shoulder_width - balls[i].radius;
-            balls[i].vel[1] *= -e;
-        }
-    }
-
-    // detect collisions
-    double collided[16] = {-1.0};
-    double unit_vec[16][2];
-    for (unsigned int i = 0; i < 16; ++i)
-    {
-        for (unsigned int j = i+1; j < 16; ++j)
-        {
-            double pen_dist = balls[i].check_collision(balls[j], unit_vec[i]);
-            if (pen_dist > 0)
+            balls[i].move_ball(dt);
+            if (balls[i].pos[0] - balls[i].radius <= shoulder_width)
             {
-                double v1 = balls[i].vel[0]*unit_vec[i][0] + balls[i].vel[1]*unit_vec[i][1];
-                double v2 = balls[j].vel[0]*unit_vec[i][0] + balls[j].vel[1]*unit_vec[i][1];
-
-                double total_mass = balls[i].mass + balls[j].mass;
-
-                double delta_v1 = (balls[j].mass/total_mass)*(v2 - v1)*(1+e);
-                double delta_v2 = (balls[i].mass/total_mass)*(v1 - v2)*(1+e);
-
-                double F1 = balls[i].mass*delta_v1/dt;
-                double F2 = balls[j].mass*delta_v2/dt;
-
-                balls[i].apply_force(F1*unit_vec[i][0], F1*unit_vec[i][1]);
-                balls[j].apply_force(F2*unit_vec[i][0], F2*unit_vec[i][1]);
+                balls[i].pos[0] = shoulder_width + balls[i].radius;
+                balls[i].vel[0] *= -e;
             }
-
+            else if (balls[i].pos[0] + balls[i].radius >= SCREEN_WIDTH - shoulder_width)
+            {
+                balls[i].pos[0] = SCREEN_WIDTH - shoulder_width - balls[i].radius;
+                balls[i].vel[0] *= -e;
+            }
+            if (balls[i].pos[1] - balls[i].radius <= shoulder_width)
+            {
+                balls[i].pos[1] = shoulder_width + balls[i].radius;
+                balls[i].vel[1] *= -e;
+            }
+            else if (balls[i].pos[1] + balls[i].radius >= SCREEN_HEIGHT - shoulder_width)
+            {
+                balls[i].pos[1] = SCREEN_HEIGHT - shoulder_width - balls[i].radius;
+                balls[i].vel[1] *= -e;
+            }
         }
+        // detect collisions
+        double collided[16] = {-1.0};
+        double unit_vec[16][2];
+        for (unsigned int i = 0; i < 16; ++i)
+        {
+            for (unsigned int j = i+1; j < 16; ++j)
+            {
+                double pen_dist = balls[i].check_collision(balls[j], unit_vec[i]);
+                if (pen_dist > 0)
+                {
+                    double v1 = balls[i].vel[0]*unit_vec[i][0] + balls[i].vel[1]*unit_vec[i][1];
+                    double v2 = balls[j].vel[0]*unit_vec[i][0] + balls[j].vel[1]*unit_vec[i][1];
+
+                    double total_mass = balls[i].mass + balls[j].mass;
+
+                    double delta_v1 = (balls[j].mass/total_mass)*(v2 - v1)*(1+e);
+                    double delta_v2 = (balls[i].mass/total_mass)*(v1 - v2)*(1+e);
+
+                    double F1 = balls[i].mass*delta_v1/dt;
+                    double F2 = balls[j].mass*delta_v2/dt;
+
+                    balls[i].apply_force(F1*unit_vec[i][0], F1*unit_vec[i][1]);
+                    balls[j].apply_force(F2*unit_vec[i][0], F2*unit_vec[i][1]);
+                }
+
+            }
+        }
+        bool all_stopped = true;
+        for (unsigned int i = 0; i < 16; ++i)
+        {
+            if ((std::abs(balls[i].vel[0]) > vel_tol) || (std::abs(balls[i].vel[1]) > vel_tol))
+                all_stopped = false;
+        }
+        if (all_stopped)
+            currentState = PLAYER_TURN;
+    }
+    else if (currentState == HITTING_BALL)
+    {
+        balls[0].apply_force(10000.0*std::cos(angle), 10000.0*std::sin(angle));
+        currentState = PHYSICS_PROCESS;
     }
 }
 
