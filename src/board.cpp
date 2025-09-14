@@ -7,7 +7,8 @@ Board::Board()
 board_colour(0),
 shoulder_colour(0),
 shoulder_width(50),
-radius(15)
+radius(15),
+board_init(false)
 {
     holes[0][0] = shoulder_width;
     holes[0][1] = shoulder_width;
@@ -26,6 +27,10 @@ radius(15)
 
     holes[5][0] = SCREEN_WIDTH  - shoulder_width;
     holes[5][1] = SCREEN_HEIGHT - shoulder_width;
+
+    for (unsigned int i = 0; i < SCREEN_WIDTH; ++i)
+        for (unsigned int j = 0; j < SCREEN_HEIGHT; ++j)
+            naked_board[i][j] = 0x00000000u;
 }
 
 // destructor
@@ -36,33 +41,51 @@ Board::~Board()
 
 void Board::draw_board(Uint32 *pixels, Uint32 board_colour, Uint32 shoulder_colour)
 {
-    int width  = SCREEN_WIDTH;
-    int height = SCREEN_HEIGHT;
-    int shoulder_width = 50;
-    for (unsigned int x = 0; x < width; ++x)
+    if (!board_init)
     {
-        bool xShoulder = (x<shoulder_width) || (x>width-shoulder_width);
-        for (unsigned int y = 0; y < height; ++y)
+        int width  = SCREEN_WIDTH;
+        int height = SCREEN_HEIGHT;
+        int shoulder_width = 50;
+        for (unsigned int x = 0; x < width; ++x)
         {
-            bool yShoulder = (y<shoulder_width) || (y>height-shoulder_width);
-            Uint32 new_colour(0);
-            if (xShoulder || yShoulder)
-                new_colour = shoulder_colour;
-            else
-                new_colour = board_colour;
-            pixels[x + y*width] = new_colour;
-        }
-    }
-
-    for (unsigned int h = 0; h < 6; ++h)
-    {
-        for (unsigned int x = holes[h][0] - radius; x < holes[h][0] + radius; ++x)
-        {
-            for (unsigned int y = holes[h][1] - radius; y < holes[h][1] + radius; ++y)
+            bool xShoulder = (x<shoulder_width) || (x>width-shoulder_width);
+            for (unsigned int y = 0; y < height; ++y)
             {
-                double r_2 = (x-holes[h][0])*(x-holes[h][0]) + (y-holes[h][1])*(y-holes[h][1]);
-                if (r_2 <= radius*radius)
-                    pixels[x + y*width] = BLACK;
+                bool yShoulder = (y<shoulder_width) || (y>height-shoulder_width);
+                Uint32 new_colour(0);
+                if (xShoulder || yShoulder)
+                    new_colour = shoulder_colour;
+                else
+                    new_colour = board_colour;
+                pixels[x + y*width] = new_colour;
+                naked_board[x][y]   = new_colour;
+            }
+        }
+
+        for (unsigned int h = 0; h < 6; ++h)
+        {
+            for (unsigned int x = holes[h][0] - radius; x < holes[h][0] + radius; ++x)
+            {
+                for (unsigned int y = holes[h][1] - radius; y < holes[h][1] + radius; ++y)
+                {
+                    double r_2 = (x-holes[h][0])*(x-holes[h][0]) + (y-holes[h][1])*(y-holes[h][1]);
+                    if (r_2 <= radius*radius)
+                    {
+                        pixels[x + y*width] = BLACK;
+                        naked_board[x][y]   = BLACK;
+                    }
+                }
+            }
+        }
+        board_init = true;
+    }
+    else
+    {
+        for (unsigned int x = 0; x < SCREEN_WIDTH; ++x)
+        {
+            for (unsigned int y = 0; y < SCREEN_HEIGHT; ++y)
+            {
+                pixels[x + y*SCREEN_WIDTH] = naked_board[x][y];
             }
         }
     }
