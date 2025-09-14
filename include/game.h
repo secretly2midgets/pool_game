@@ -7,6 +7,7 @@
 
 // std stuff
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <cmath>
 
@@ -54,6 +55,9 @@ private:
 
     //The image we will load and show on the screen
     SDL_Surface* writeSurface;
+
+    // Debug stuff
+    std::stringstream timeText;
 };
 
 #endif

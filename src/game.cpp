@@ -14,6 +14,7 @@ gameBoard()
         balls[i] = Ball(0, 10, 0, 0);
     }
     currentState = PLAYER_ONE;
+    timeText.str("");
 }
 
 // Destructor
@@ -129,8 +130,15 @@ void Game::run()
     bool quit(false);
     SDL_Event e;
     SDL_zero(e);
+
+    // time stuff
     double elapsed_time = 0.0;
     double last_time = SDL_GetTicksNS();
+    // debug time stuff
+    double eventTime   = 0.0;
+    double physicsTime = 0.0;
+    double renderTime  = 0.0;
+    double waitTime    = 0.0;
 
     // main game loop
     while (!quit)
@@ -178,15 +186,28 @@ void Game::run()
                 }
             }
         }
+        eventTime = SDL_GetTicksNS() - last_time;
 
         // physics
         process_physics(frametime);
 
+        physicsTime = SDL_GetTicksNS() - last_time - eventTime;
+
         // render
         render();
 
+        renderTime = SDL_GetTicksNS() - last_time - eventTime - physicsTime;
+
+        waitTime = 0.0;
         if (1000.0*frametime > (1e-6)*elapsed_time)
+        {
+            waitTime = (1e9)*frametime - elapsed_time;
             SDL_Delay(1000.0*frametime - (1e-6)*elapsed_time);
+        }
+
+        timeText << "Events: " << (1e-6)*eventTime << "| Physics: " << (1e-6)*physicsTime << "| Render: " << (1e-6)*renderTime << "| Wait: " << (1e-6)*waitTime << "\r";
+        std::cout << timeText.str();
+        timeText.str("");
     }
 }
 
