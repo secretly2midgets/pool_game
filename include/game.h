@@ -20,7 +20,8 @@ enum GameState
 {
     PLAYER_TURN,
     PHYSICS_PROCESS,
-    HITTING_BALL
+    HITTING_BALL,
+    PLACING_CUE_BALL
 };
 
 enum Player

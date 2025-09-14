@@ -7,7 +7,7 @@ Board::Board()
 board_colour(0),
 shoulder_colour(0),
 shoulder_width(50),
-radius(15),
+radius(25), //radius(15),
 board_init(false)
 {
     holes[0][0] = shoulder_width;
@@ -143,4 +143,18 @@ void Board::draw_line_segment(Uint32 *pixels, Uint32 line_colour, double line_wi
             on_board = false;
         }
     }
+}
+
+int Board::ball_in_hole(double px, double py)
+{
+    int sink_hole = -1;
+    for (unsigned int h = 0; h < 6; ++h)
+    {
+        double dx = px - holes[h][0];
+        double dy = py - holes[h][1];
+        // if the position is closer to any hole than the radius then it's in the hole
+        if ((dx*dx + dy*dy) < radius*radius)
+            sink_hole = h;
+    }
+    return sink_hole;
 }

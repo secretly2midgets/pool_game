@@ -266,25 +266,30 @@ void Game::process_physics(double dt)
         for (unsigned int i = 0; i < 16; ++i)
         {
             balls[i].move_ball(dt);
-            if (balls[i].pos[0] - balls[i].radius <= shoulder_width)
+            // only do edge detection if the ball is in play
+            if (balls[i].sunk == NOT_SUNK)
             {
-                balls[i].pos[0] = shoulder_width + balls[i].radius;
-                balls[i].vel[0] *= -e;
-            }
-            else if (balls[i].pos[0] + balls[i].radius >= SCREEN_WIDTH - shoulder_width)
-            {
-                balls[i].pos[0] = SCREEN_WIDTH - shoulder_width - balls[i].radius;
-                balls[i].vel[0] *= -e;
-            }
-            if (balls[i].pos[1] - balls[i].radius <= shoulder_width)
-            {
-                balls[i].pos[1] = shoulder_width + balls[i].radius;
-                balls[i].vel[1] *= -e;
-            }
-            else if (balls[i].pos[1] + balls[i].radius >= SCREEN_HEIGHT - shoulder_width)
-            {
-                balls[i].pos[1] = SCREEN_HEIGHT - shoulder_width - balls[i].radius;
-                balls[i].vel[1] *= -e;
+
+                if (balls[i].pos[0] - balls[i].radius <= shoulder_width)
+                {
+                    balls[i].pos[0] = shoulder_width + balls[i].radius;
+                    balls[i].vel[0] *= -e;
+                }
+                else if (balls[i].pos[0] + balls[i].radius >= SCREEN_WIDTH - shoulder_width)
+                {
+                    balls[i].pos[0] = SCREEN_WIDTH - shoulder_width - balls[i].radius;
+                    balls[i].vel[0] *= -e;
+                }
+                if (balls[i].pos[1] - balls[i].radius <= shoulder_width)
+                {
+                    balls[i].pos[1] = shoulder_width + balls[i].radius;
+                    balls[i].vel[1] *= -e;
+                }
+                else if (balls[i].pos[1] + balls[i].radius >= SCREEN_HEIGHT - shoulder_width)
+                {
+                    balls[i].pos[1] = SCREEN_HEIGHT - shoulder_width - balls[i].radius;
+                    balls[i].vel[1] *= -e;
+                }
             }
         }
         // detect collisions
@@ -294,26 +299,44 @@ void Game::process_physics(double dt)
         {
             for (unsigned int j = i+1; j < 16; ++j)
             {
-                double pen_dist = balls[i].check_collision(balls[j], unit_vec[i]);
-                if (pen_dist > 0)
+                // only collide with balls in play
+                if (balls[j].sunk == NOT_SUNK)
                 {
-                    double v1 = balls[i].vel[0]*unit_vec[i][0] + balls[i].vel[1]*unit_vec[i][1];
-                    double v2 = balls[j].vel[0]*unit_vec[i][0] + balls[j].vel[1]*unit_vec[i][1];
+                    double pen_dist = balls[i].check_collision(balls[j], unit_vec[i]);
+                    if (pen_dist > 0)
+                    {
+                        double v1 = balls[i].vel[0]*unit_vec[i][0] + balls[i].vel[1]*unit_vec[i][1];
+                        double v2 = balls[j].vel[0]*unit_vec[i][0] + balls[j].vel[1]*unit_vec[i][1];
 
-                    double total_mass = balls[i].mass + balls[j].mass;
+                        double total_mass = balls[i].mass + balls[j].mass;
 
-                    double delta_v1 = (balls[j].mass/total_mass)*(v2 - v1)*(1+e);
-                    double delta_v2 = (balls[i].mass/total_mass)*(v1 - v2)*(1+e);
+                        double delta_v1 = (balls[j].mass/total_mass)*(v2 - v1)*(1+e);
+                        double delta_v2 = (balls[i].mass/total_mass)*(v1 - v2)*(1+e);
 
-                    double F1 = balls[i].mass*delta_v1/dt;
-                    double F2 = balls[j].mass*delta_v2/dt;
+                        double F1 = balls[i].mass*delta_v1/dt;
+                        double F2 = balls[j].mass*delta_v2/dt;
 
-                    balls[i].apply_force(F1*unit_vec[i][0], F1*unit_vec[i][1]);
-                    balls[j].apply_force(F2*unit_vec[i][0], F2*unit_vec[i][1]);
+                        balls[i].apply_force(F1*unit_vec[i][0], F1*unit_vec[i][1]);
+                        balls[j].apply_force(F2*unit_vec[i][0], F2*unit_vec[i][1]);
+                    }
                 }
-
             }
         }
+        // check if any balls have sunk
+        for (unsigned int i = 0; i < 16; ++i)
+        {
+            if (balls[i].sunk == NOT_SUNK)
+            {
+                int h = gameBoard.ball_in_hole(balls[i].pos[0], balls[i].pos[1]);
+                if (h >= 0)
+                {
+                    balls[i].sinking_towards(gameBoard.holes[h][0], gameBoard.holes[h][1]);
+                }
+            }
+        }
+
+
+        // check if all the balls are stopped (if so then the physics is done)
         bool all_stopped = true;
         for (unsigned int i = 0; i < 16; ++i)
         {

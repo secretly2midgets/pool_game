@@ -8,10 +8,11 @@ Clean up:
  - Use a leapfrog integration scheme
 
 New features necessary for pool
- - Hit ball with cue
+ - [DONE] Hit ball with cue
  - [DONE] Draw line to show where things are heading
  - Sink balls
  - Turns, score
+ - Hardness of hitting ball
 
 Background stuff to make game better
  - [DONE] Frame time stuff
