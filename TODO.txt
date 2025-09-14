@@ -12,7 +12,7 @@ New features necessary for pool
  - [DONE] Draw line to show where things are heading
  - [DONE] Sink balls
  - Turns, score
- - Hardness of hitting ball
+ - [DONE] Hardness of hitting ball
  - [SIMPLE VERSION DONE] Recover sunk cue ball
 
 Background stuff to make game better

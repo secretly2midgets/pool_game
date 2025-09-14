@@ -11,6 +11,9 @@ gameBoard()
     angle = 0.0;
     turning = 0.0;
     shiftToSlow = 1.0;
+    spaceStartTime = 0.0;
+    hitSpeedScale = 1e-4;
+    maxHitStrength = 4e4;
     for (unsigned int i = 0; i < 16; ++i)
     {
         balls[i] = Ball(0, 10, 0, 0);
@@ -170,7 +173,7 @@ void Game::run()
         }
 
         timeText << "Events: " << (1e-6)*eventTime << "| Physics: " << (1e-6)*physicsTime << "| Render: " << (1e-6)*renderTime << "| Wait: " << (1e-6)*waitTime << "\r";
-        std::cout << timeText.str();
+//         std::cout << timeText.str();
         timeText.str("");
     }
 }
@@ -211,7 +214,8 @@ void Game::handle_events(SDL_Event e, bool& quit)
             }
             else if (e.key.key == SDLK_SPACE)
             {
-                currentState = HITTING_BALL;
+                if (spaceStartTime == 0.0)
+                    spaceStartTime = SDL_GetTicksNS();
             }
             else if (e.key.key == SDLK_LSHIFT)
             {
@@ -227,6 +231,11 @@ void Game::handle_events(SDL_Event e, bool& quit)
             else if (e.key.key == SDLK_LSHIFT)
             {
                 shiftToSlow = 1.0;
+            }
+            else if (e.key.key == SDLK_SPACE)
+            {
+                currentState = HITTING_BALL;
+                spaceStartTime = 0.0;
             }
         }
     }
@@ -259,6 +268,14 @@ void Game::render()
                 gameBoard.draw_line_segment(pixels, LIGHTGREY,  3.0, balls[0].pos[0], balls[0].pos[1], std::fmod(angle + M_PI, 2.0*M_PI), 3.0,   50.0);
                 break;
         }
+    }
+    if (spaceStartTime != 0)
+    {
+        // white part of power bar
+        gameBoard.draw_line_segment(pixels, LIGHTGREY, 3.0, balls[0].pos[0] + 20.0*std::sin(angle), balls[0].pos[1] + 20.0*std::cos(angle), angle, 100.0, -120.0);
+        // coloured part of power bar
+        double hitting_ratio = get_hitting_force(SDL_GetTicksNS())/maxHitStrength;
+        gameBoard.draw_line_segment(pixels, YELLOW,    3.0, balls[0].pos[0] + 20.0*std::sin(angle), balls[0].pos[1] + 20.0*std::cos(angle), angle, 100.0*hitting_ratio, -120.0);
     }
 
 
@@ -366,7 +383,8 @@ void Game::process_physics(double dt)
     }
     else if (currentState == HITTING_BALL)
     {
-        balls[0].apply_force(10000.0*std::cos(angle), 10000.0*std::sin(angle));
+        double hitting_force = get_hitting_force(SDL_GetTicksNS());
+        balls[0].apply_force(hitting_force*std::cos(angle), hitting_force*std::sin(angle));
         currentState = PHYSICS_PROCESS;
     }
     else if (currentState == PLAYER_TURN)

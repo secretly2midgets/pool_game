@@ -44,6 +44,12 @@ private:
     void make_balls();
     void process_physics(double dt);
     void handle_events(SDL_Event e, bool& quit);
+    inline double get_hitting_force(double time)
+    {
+        return std::min((time - spaceStartTime)*hitSpeedScale, maxHitStrength);
+    }
+    double hitSpeedScale;
+    double maxHitStrength;
 
     // Game objects
     Ball balls[16];
@@ -56,6 +62,10 @@ private:
     // if shift is held this is 0.1 if not it is 1.0
     double shiftToSlow;
     double angle;
+    // contains the amount of time that space has been held down which controls how hard the ball will be hit
+    double spaceStartTime;
+
+
     GameState currentState;
     Player whoseTurn;
 
